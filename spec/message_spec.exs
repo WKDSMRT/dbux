@@ -144,6 +144,86 @@ defmodule DBux.MessageSpec do
           end
         end
 
+        context "Error" do
+          let :bitstring, do: <<108, 3, 1, 1, 120, 0, 0, 0, 6, 0, 0, 0, 71, 0, 0, 0, 4, 1, 115, 0, 40, 0, 0, 0, 111, 114, 103, 46, 102, 114, 101, 101, 100, 101, 115, 107, 116, 111, 112, 46, 68, 66, 117, 115, 46, 69, 114, 114, 111, 114, 46, 85, 110, 107, 110, 111, 119, 110, 77, 101, 116, 104, 111, 100, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 117, 0, 5, 0, 0, 0, 8, 1, 103, 0, 1, 115, 0, 0, 115, 0, 0, 0, 77, 101, 116, 104, 111, 100, 32, 34, 69, 120, 116, 114, 97, 99, 116, 68, 117, 114, 97, 116, 105, 111, 110, 34, 32, 119, 105, 116, 104, 32, 115, 105, 103, 110, 97, 116, 117, 114, 101, 32, 34, 115, 34, 32, 111, 110, 32, 105, 110, 116, 101, 114, 102, 97, 99, 101, 32, 34, 111, 114, 103, 46, 110, 101, 117, 116, 114, 105, 110, 111, 46, 72, 101, 108, 109, 115, 109, 97, 110, 46, 80, 114, 111, 99, 101, 115, 115, 105, 110, 103, 46, 68, 117, 114, 97, 116, 105, 111, 110, 34, 32, 100, 111, 101, 115, 110, 39, 116, 32, 101, 120, 105, 115, 116, 10, 0>>
+          let :unwrap_values, do: true
+
+          it "should return ok result" do
+            expect(described_module.unmarshall(bitstring, unwrap_values)).to be_ok_result
+          end
+
+          it "should have destination set to \"org.freedesktop.DBus\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, false)
+            expect(message.destination).to eq nil
+          end
+
+          it "should have error_name set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.error_name).to eq "org.freedesktop.DBus.Error.UnknownMethod"
+          end
+
+          it "should have flags set to 1" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.flags).to eq 1
+          end
+
+          it "should have interface set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.interface).to be_nil
+          end
+
+          it "should have member set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.member).to be_nil
+          end
+
+          it "should have path set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.path).to be_nil
+          end
+
+          it "should have reply_serial set to 5" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.reply_serial).to eq 5
+          end
+
+          it "should have sender set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.sender).to be_nil
+          end
+
+          it "should have serial set to 6" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.serial).to eq 6
+          end
+
+          it "should have signature set to \"s\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.signature).to eq "s"
+          end
+
+          it "should have message_type set to :method_call" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.message_type).to eq :error
+          end
+
+          it "should have unix_fds set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.unix_fds).to be_nil
+          end
+
+          it "should have body set to empty list" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.body).to eq ["Method \"ExtractDuration\" with signature \"s\" on interface \"org.neutrino.Helmsman.Processing.Duration\" doesn't exist\n"]
+          end
+
+          it "should leave no rest" do
+            {:ok, {_message, rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(rest).to eq << >>
+          end
+        end
+
         context "NameOwnerChanged" do
           let :bitstring, do: << 0x6c, 0x04, 0x01, 0x01, 0x1d, 0x00, 0x00, 0x00, 0x1d, 0x00, 0x00, 0x00, 0x89, 0x00, 0x00, 0x00, 0x01, 0x01, 0x6f, 0x00, 0x15, 0x00, 0x00, 0x00, 0x2f, 0x6f, 0x72, 0x67, 0x2f, 0x66, 0x72, 0x65, 0x65, 0x64, 0x65, 0x73, 0x6b, 0x74, 0x6f, 0x70, 0x2f, 0x44, 0x42, 0x75, 0x73, 0x00, 0x00, 0x00, 0x02, 0x01, 0x73, 0x00, 0x14, 0x00, 0x00, 0x00, 0x6f, 0x72, 0x67, 0x2e, 0x66, 0x72, 0x65, 0x65, 0x64, 0x65, 0x73, 0x6b, 0x74, 0x6f, 0x70, 0x2e, 0x44, 0x42, 0x75, 0x73, 0x00, 0x00, 0x00, 0x00, 0x03, 0x01, 0x73, 0x00, 0x10, 0x00, 0x00, 0x00, 0x4e, 0x61, 0x6d, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x01, 0x73, 0x00, 0x14, 0x00, 0x00, 0x00, 0x6f, 0x72, 0x67, 0x2e, 0x66, 0x72, 0x65, 0x65, 0x64, 0x65, 0x73, 0x6b, 0x74, 0x6f, 0x70, 0x2e, 0x44, 0x42, 0x75, 0x73, 0x00, 0x00, 0x00, 0x00, 0x08, 0x01, 0x67, 0x00, 0x03, 0x73, 0x73, 0x73, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x3a, 0x31, 0x2e, 0x31, 0x36, 0x32, 0x34, 0x00, 0x07, 0x00, 0x00, 0x00, 0x3a, 0x31, 0x2e, 0x31, 0x36, 0x32, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 >>
           let :unwrap_values, do: true

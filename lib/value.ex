@@ -320,30 +320,26 @@ defmodule DBux.Value do
 
   def unmarshall(bitstring, endianness, {:struct, subtypes}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling struct: bitstring = #{inspect(bitstring)}", depth)
-    if byte_size(bitstring) < DBux.Type.align_size(:struct) do
-      {:error, :bitstring_too_short}
-
-    else
-      {elements, rest} = Enum.reduce(subtypes, {[], bitstring}, fn(subtype, {elements_acc, bitstring_acc}) ->
-        if @debug, do: debug("Unmarshalling struct: subtype = #{inspect(subtype)}, bitstring_acc = #{inspect(bitstring_acc)}, elements_acc = #{inspect(elements_acc)}", depth)
-        case unmarshall(bitstring_acc, endianness, subtype, unwrap_values, depth + 1) do
-          {:ok, {value, rest}} ->
+    
+    {elements, rest} = Enum.reduce(subtypes, {[], bitstring}, fn(subtype, {elements_acc, bitstring_acc}) ->
+      if @debug, do: debug("Unmarshalling struct: subtype = #{inspect(subtype)}, bitstring_acc = #{inspect(bitstring_acc)}, elements_acc = #{inspect(elements_acc)}", depth)
+      case unmarshall(bitstring_acc, endianness, subtype, unwrap_values, depth + 1) do
+        {:ok, {value, rest}} ->
             {elements_acc ++ [value], rest}
 
-          {:error, reason} ->
-            {:error, reason}
-        end
-
-        # TODO add paddingment?
-      end)
-
-      case unwrap_values do
-        true ->
-          {:ok, {List.to_tuple(elements), rest}}
-
-        false ->
-          {:ok, {%DBux.Value{type: :struct, value: elements}, rest}}
+        {:error, reason} ->
+          {:error, reason}
       end
+
+      # TODO add paddingment?
+    end)
+
+    case unwrap_values do
+      true ->
+        {:ok, {List.to_tuple(elements), rest}}
+
+      false ->
+        {:ok, {%DBux.Value{type: :struct, value: elements}, rest}}
     end
   end
 
