@@ -57,7 +57,7 @@ defmodule DBux.Type do
   Parses signature in D-Bus format and returns it as a nested list in which
   simple types are represented as atoms and container types as tuples.
 
-  For example, "yba{s(ui)}" will become `[:byte, :boolean, {:array, [{:dict, [:string, {:struct, [:uint32, :int32]}]}]}]`.
+  For example, "yba{s(ui)}" will become `[:byte, :boolean, {:array, [{:dict_entry, [:string, {:struct, [:uint32, :int32]}]}]}]`.
 
   First of all, it is much more convenient to have such structure if you want
   to recursively parse signature in Elixir, so it is used internally while
@@ -264,7 +264,7 @@ defmodule DBux.Type do
 
   # Within dict: Closing non-empty dict, return
   defp parse_dict(<< "}", rest :: binary >>, acc) do
-    {:ok, {:dict, acc}, rest}
+    {:ok, {:dict_entry, acc}, rest}
   end
 
 
