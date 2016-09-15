@@ -39,8 +39,8 @@ defmodule DBux.MessageSpec do
       end
     end
 
-    xcontext "if message body contains a dict" do
-      let :message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{ss}", [%DBux.Value{type: :array, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :string, value: "fg"}]}]}], "org.example.dbux", 2)
+    context "if message body contains a dict" do
+      let :message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{ss}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :string, value: "fg"}]}]}], "org.example.dbux", 2)
       let :endianness, do: :little_endian
 
       # Generated with dbus-send --type=method_call --dest=org.example.dbux /Test org.example.dbux.Test dict:string:string:"abcde","fg"
@@ -50,8 +50,11 @@ defmodule DBux.MessageSpec do
         expect(described_module.marshall(message, endianness)).to be_ok_result
       end
 
-      it "should return valid bitstring" do
+      xit "should return valid bitstring" do
         {:ok, bitstring} = described_module.marshall(message, endianness)
+        {:ok, unmarshalled1} = described_module.unmarshall(expected_bitstring, false)
+        {:ok, unmarshalled2} = described_module.unmarshall(bitstring, false)
+        expect(unmarshalled1).to eq unmarshalled2
         expect(bitstring).to eq expected_bitstring
       end
     end
@@ -216,6 +219,93 @@ defmodule DBux.MessageSpec do
           it "should have body set to empty list" do
             {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
             expect(message.body).to eq ["Method \"ExtractDuration\" with signature \"s\" on interface \"org.neutrino.Helmsman.Processing.Duration\" doesn't exist\n"]
+          end
+
+          it "should leave no rest" do
+            {:ok, {_message, rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(rest).to eq << >>
+          end
+        end
+
+        context "if message body contains a dict" do
+          let :expected_message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{ss}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :string, value: "fg"}]}]}], "org.example.dbux", 2)
+          let :endianness, do: :little_endian
+          let :unwrap_values, do: true
+
+          # Generated with dbus-send --type=method_call --dest=org.example.dbux /Test org.example.dbux.Test dict:string:string:"abcde","fg"
+          let :bitstring, do: << 0x6c, 0x01, 0x00, 0x01, 0x1b, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x01, 0x01, 0x6f, 0x00, 0x05, 0x00, 0x00, 0x00, 0x2f, 0x54, 0x65, 0x73, 0x74, 0x00, 0x00, 0x00, 0x02, 0x01, 0x73, 0x00, 0x10, 0x00, 0x00, 0x00, 0x6f, 0x72, 0x67, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x64, 0x62, 0x75, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x01, 0x73, 0x00, 0x04, 0x00, 0x00, 0x00, 0x54, 0x65, 0x73, 0x74, 0x00, 0x00, 0x00, 0x00, 0x06, 0x01, 0x73, 0x00, 0x10, 0x00, 0x00, 0x00, 0x6f, 0x72, 0x67, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x64, 0x62, 0x75, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x01, 0x67, 0x00, 0x05, 0x61, 0x7b, 0x73, 0x73, 0x7d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x66, 0x67, 0x00 >>
+
+          it "should return ok result" do
+            expect(described_module.unmarshall(bitstring, unwrap_values)).to be_ok_result
+          end
+
+          it "should return ok result" do
+            expect(described_module.unmarshall(bitstring, unwrap_values)).to be_ok_result
+          end
+
+          it "should have destination set to \"org.example.dbux\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.destination).to eq "org.example.dbux"
+          end
+
+          it "should have error_name set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.error_name).to be_nil
+          end
+
+          it "should have flags set to 0" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.flags).to eq 0
+          end
+
+          it "should have interface set to \"org.example.dbux\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.interface).to eq "org.example.dbux"
+          end
+
+          it "should have member set to \"Test\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.member).to eq "Test"
+          end
+
+          it "should have path set to \"/Test\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.path).to eq "/Test"
+          end
+
+          it "should have reply_serial set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.reply_serial).to be_nil
+          end
+
+          it "should have sender set to " do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.sender).to eq nil
+          end
+
+          it "should have serial set to 2" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.serial).to eq 2
+          end
+
+          it "should have signature set to \"a{ss}\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.signature).to eq "a{ss}"
+          end
+
+          it "should have message_type set to :method_call" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.message_type).to eq :method_call
+          end
+
+          it "should have unix_fds set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.unix_fds).to be_nil
+          end
+
+          it "should have body set to list of strings" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.body).to eq [[{"abcde", "fg"}]]
           end
 
           it "should leave no rest" do

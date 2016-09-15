@@ -260,7 +260,6 @@ defmodule DBux.Value do
     marshall(bitstring, %{value | type: :struct}, endianness)
   end
 
-
   @spec marshall(Bitstring, %DBux.Value{}, DBux.Protocol.endianness) :: Bitstring
   def marshall(bitstring, %DBux.Value{type: :struct, value: elements}, endianness) when is_list(elements) and is_binary(bitstring) do
     if @debug, do: debug("Marshalling struct start: elements = #{inspect(elements)}, bitstring = #{inspect(bitstring)}", 0)
@@ -271,8 +270,6 @@ defmodule DBux.Value do
     end)
   end
 
-
-
   def unmarshall(bitstring, endianness, {:array, subtype}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling array: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:array) do
@@ -280,7 +277,8 @@ defmodule DBux.Value do
       {:error, :bitstring_too_short}
 
     else
-      case unmarshall(bitstring, endianness, :uint32, true, depth + 1) do
+      frame_size = if match?([dict_entry: _], subtype), do: :uint64, else: :uint32
+      case unmarshall(bitstring, endianness, frame_size, true, depth + 1) do
         {:ok, {body_length, rest}} ->
           if byte_size(rest) < body_length do
             if @debug, do: debug("Unmarshalling array: bitstring too short", depth)
@@ -317,19 +315,25 @@ defmodule DBux.Value do
     unmarshall(bitstring, endianness, {:struct, subtype}, unwrap_values, depth)
   end
 
-
   def unmarshall(bitstring, endianness, {:struct, subtypes}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling struct: bitstring = #{inspect(bitstring)}", depth)
     
-    {elements, rest} = Enum.reduce(subtypes, {[], bitstring}, fn(subtype, {elements_acc, bitstring_acc}) ->
-      if @debug, do: debug("Unmarshalling struct: subtype = #{inspect(subtype)}, bitstring_acc = #{inspect(bitstring_acc)}, elements_acc = #{inspect(elements_acc)}", depth)
-      case unmarshall(bitstring_acc, endianness, subtype, unwrap_values, depth + 1) do
-        {:ok, {value, rest}} ->
-            {elements_acc ++ [value], rest}
+    {elements, rest} = Enum.reduce(subtypes, {[], bitstring}, fn
+      (subtype, {elements_acc, bitstring_acc}) ->
+        #Fixme: Ugly hack to account for padding in structs. Values of struct should be aligned to 8 byte, but unmarshallers don't know how to do it,
+        # and there is straight forward way to know size of unmarshalled value.
+        # Possibly bitstring here is always divisibly by 8, which would make rest always divisible by 8.
+        #
+        bitstring_acc = String.trim_leading(bitstring_acc, << 0 >>)
 
-        {:error, reason} ->
-          {:error, reason}
-      end
+        if @debug, do: debug("Unmarshalling struct: subtype = #{inspect(subtype)}, bitstring_acc = #{inspect(bitstring_acc)}, elements_acc = #{inspect(elements_acc)}", depth)
+        case unmarshall(bitstring_acc, endianness, subtype, unwrap_values, depth + 1) do
+          {:ok, {value, rest}} ->
+              {elements_acc ++ [value], rest}
+
+          {:error, reason} ->
+            {:error, reason}
+        end
 
       # TODO add paddingment?
     end)
