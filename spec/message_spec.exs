@@ -227,6 +227,19 @@ defmodule DBux.MessageSpec do
           end
         end
 
+        context "if message body contains a dict with variant" do
+          let :expected_message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{sv}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :variant, value: %DBux.Value{type: :string, value: "fgh"}}]}]}], "org.example.dbux", 2)
+          let :endianness, do: :little_endian
+          let :unwrap_values, do: true
+
+          #TODO: This should be an actual message
+          it "should unmarshall it" do
+            {:ok, bitstring} = described_module.marshall(expected_message, endianness)
+            {:ok, {message, rest}} = described_module.unmarshall(bitstring, true)
+            expect(message.body).to eq([[{"abcde", "fgh"}]])
+          end
+        end
+
         context "if message body contains a dict" do
           let :expected_message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{ss}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :string, value: "fg"}]}]}], "org.example.dbux", 2)
           let :endianness, do: :little_endian
