@@ -240,6 +240,92 @@ defmodule DBux.MessageSpec do
           end
         end
 
+        context "if message body contains a dict with variant 2" do
+          let :expected_message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{sv}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :variant, value: %DBux.Value{type: :string, value: "fgh"}}]}]}], "org.example.dbux", 2)
+          let :endianness, do: :little_endian
+          let :unwrap_values, do: true
+
+          let :bitstring, do: <<108, 4, 1, 1, 91, 0, 0, 0, 42, 0, 0, 0, 133, 0, 0, 0, 8, 1, 103, 0, 8, 115, 115, 120, 97, 123, 115, 118, 125, 0, 0, 0, 1, 1, 111, 0, 9, 0, 0, 0, 47, 76, 97, 117, 110, 99, 104, 101, 114, 0, 0, 0, 0, 0, 0, 0, 3, 1, 115, 0, 20, 0, 0, 0, 79, 110, 80, 114, 111, 99, 101, 115, 115, 105, 110, 103, 70, 105, 110, 105, 115, 104, 101, 100, 0, 0, 0, 0, 2, 1, 115, 0, 39, 0, 0, 0, 111, 114, 103, 46, 110, 101, 117, 116, 114, 105, 110, 111, 46, 97, 117, 100, 105, 111, 109, 97, 116, 105, 99, 46, 68, 97, 101, 109, 111, 110, 46, 76, 97, 117, 110, 99, 104, 101, 114, 0, 7, 1, 115, 0, 4, 0, 0, 0, 58, 49, 46, 49, 0, 0, 0, 0, 6, 0, 0, 0, 102, 111, 114, 109, 97, 116, 0, 0, 16, 0, 0, 0, 105, 56, 81, 67, 107, 110, 83, 95, 52, 55, 102, 100, 86, 103, 61, 61, 0, 0, 0, 0, 0, 0, 0, 0, 117, 6, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 80, 82, 79, 67, 69, 83, 83, 79, 82, 95, 78, 65, 77, 69, 0, 1, 115, 0, 0, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
+
+          it "should unmarshall it" do
+            {:ok, {message, rest}} = described_module.unmarshall(bitstring, true)
+            expect(message.body).to eq(["format", "i8QCknS_47fdVg==", 1653, [{"PROCESSOR_NAME", "Format"}]])
+          end
+
+          it "should return ok result" do
+            expect(described_module.unmarshall(bitstring, unwrap_values)).to be_ok_result
+          end
+
+          it "should return ok result" do
+            expect(described_module.unmarshall(bitstring, unwrap_values)).to be_ok_result
+          end
+
+          it "should have destination set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.destination).to be_nil
+          end
+
+          it "should have error_name set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.error_name).to be_nil
+          end
+
+          it "should have flags set to 1" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.flags).to eq 1
+          end
+
+          it "should have interface set to \"org.neutrino.audiomatic.Daemon.Launcher\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.interface).to eq "org.neutrino.audiomatic.Daemon.Launcher"
+          end
+
+          it "should have member set to \"OnProcessingFinished\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.member).to eq "OnProcessingFinished"
+          end
+
+          it "should have path set to \"/Launcher\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.path).to eq "/Launcher"
+          end
+
+          it "should have reply_serial set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.reply_serial).to be_nil
+          end
+
+          it "should have sender set to :1.1" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.sender).to eq ":1.1"
+          end
+
+          it "should have serial set to 42" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.serial).to eq 42
+          end
+
+          it "should have signature set to \"ssxa{sv}\"" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.signature).to eq "ssxa{sv}"
+          end
+
+          it "should have message_type set to :signal" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.message_type).to eq :signal
+          end
+
+          it "should have unix_fds set to nil" do
+            {:ok, {message, _rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(message.unix_fds).to be_nil
+          end
+
+          it "should leave no rest" do
+            {:ok, {_message, rest}} = described_module.unmarshall(bitstring, unwrap_values)
+            expect(rest).to eq << >>
+          end
+        end
+
         context "if message body contains a dict" do
           let :expected_message, do: DBux.Message.build_method_call("/Test", "org.example.dbux", "Test", "a{ss}", [%DBux.Value{type: {:array, :dict_entry}, value: [%DBux.Value{type: :dict_entry, value: [%DBux.Value{type: :string, value: "abcde"}, %DBux.Value{type: :string, value: "fg"}]}]}], "org.example.dbux", 2)
           let :endianness, do: :little_endian

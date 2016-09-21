@@ -649,7 +649,13 @@ defmodule DBux.Value do
 
         padding_length = dict_padding(length, in_dict)
 
-        << body :: binary-size(length), _ :: binary-size(padding_length), 0, rest :: binary >> = rest
+        # FIXME: Needs investigating - sometimes signature has Null byte at the end, sometimes not.
+        # - << 115, 0, 0, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
+        # - << 115, 0, 0, 0, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
+        {body, rest} = case rest do
+          << body :: binary-size(length), _ :: binary-size(padding_length), 0, rest :: binary >> -> {body, rest}
+          << body :: binary-size(length), _ :: binary-size(padding_length), rest :: binary >> -> {body, rest}
+        end
         if @debug, do: debug("Unmarshalling signature: length = #{inspect(length)}, body = #{inspect(body)}", depth)
 
         case unwrap_values do
