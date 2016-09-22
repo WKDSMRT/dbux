@@ -325,6 +325,10 @@ defmodule DBux.Value do
         # and there is straight forward way to know size of unmarshalled value.
         # Possibly bitstring here is always divisibly by 8, which would make rest always divisible by 8.
         #
+        # IO.inspect("--")
+        # IO.inspect(in_dict)
+        # IO.inspect(subtypes)
+        # IO.inspect(bitstring_acc)
         bitstring_acc = if in_dict do
           String.trim_leading(bitstring_acc, << 0 >>)
         else
@@ -646,15 +650,14 @@ defmodule DBux.Value do
         {:error, :bitstring_too_short}
 
       else
+        padding_length = max(dict_padding(length, in_dict) * 8, 8) # bits
 
-        padding_length = dict_padding(length, in_dict)
-
-        # FIXME: Needs investigating - sometimes signature has Null byte at the end, sometimes not.
+        # FIXME: Needs investigating - sometimes signature has Null byte at the end, sometimes not. Somtimes it is not padded to dict
         # - << 115, 0, 0, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
-        # - << 115, 0, 0, 0, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
+        # - << 115, 0, 6, 0, 0, 0, 70, 111, 114, 109, 97, 116, 0>>
         {body, rest} = case rest do
-          << body :: binary-size(length), _ :: binary-size(padding_length), 0, rest :: binary >> -> {body, rest}
-          << body :: binary-size(length), _ :: binary-size(padding_length), rest :: binary >> -> {body, rest}
+          << body :: binary-size(length), 0 :: size(padding_length), rest :: binary >> -> {body, rest}
+          << body :: binary-size(length), 0, rest :: binary >> -> {body, rest}
         end
         if @debug, do: debug("Unmarshalling signature: length = #{inspect(length)}, body = #{inspect(body)}", depth)
 
