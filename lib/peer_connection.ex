@@ -608,6 +608,9 @@ defmodule DBux.PeerConnection do
       {:stop, reason, new_mod_state} ->
         {:stop, reason, %{state | mod_state: new_mod_state}}
 
+      {:stop, reason, reply, new_mod_state} ->
+        {:stop, reason, reply, %{state | mod_state: new_mod_state}}
+
       {:noreply, new_mod_state} ->
         {:noreply, %{state | mod_state: new_mod_state}}
 
