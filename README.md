@@ -32,7 +32,7 @@ still not implemented:
 * Marshalling variants that contain container types
 * Handling message timeouts
 * Handling introspection calls and other generic D-Bus methods
-* Other transports than TCP
+* Other transports than TCP and Unix Domain Sockets
 * Other authentication methods than anonymous
 
 # Installation
@@ -93,6 +93,8 @@ defmodule MyApp.Bus do
     initial_state = %{hostname: hostname}
 
     {:ok, "tcp:host=" <> hostname <> ",port=8888", [:anonymous], initial_state}
+    # For Unix Domain Sockets
+    # {:ok, "unix:path=" <> hostname, [:anonymous], initial_state}
   end
 
   def handle_up(state) do

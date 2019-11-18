@@ -38,4 +38,20 @@ defmodule DBux.Transport do
 
     {:ok, {DBux.Transport.TCP, params}}
   end
+
+  def get_module_for_address("unix:" <> rest) do
+    params = Enum.reduce(String.split(rest, ","), [], fn(part, acc) ->
+      [key, value] = String.split(part, "=", parts: 2)
+
+      case key do
+        "path" ->
+          acc ++ [{:path, value}]
+
+        _ ->
+          acc
+      end
+    end)
+
+    {:ok, {DBux.Transport.UDS, params}}
+  end
 end

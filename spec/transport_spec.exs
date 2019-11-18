@@ -21,5 +21,25 @@ defmodule DBux.TransportSpec do
         end
       end
     end
+
+    context "if given a UDS address" do
+      context "that is valid" do
+        let :address, do: "unix:path=/my/dbus.sock"
+
+        it "returns an ok result" do
+          expect(described_module.get_module_for_address(address)).to be_ok_result
+        end
+
+        it "returns DBux.Transport.UDS as a module" do
+          {:ok, {mod, _opts}} = described_module.get_module_for_address(address)
+          expect(mod).to eq DBux.Transport.UDS
+        end
+
+        it "returns parsed path as an option" do
+          {:ok, {_mod, opts}} = described_module.get_module_for_address(address)
+          expect(opts).to eq [path: "/my/dbus.sock"]
+        end
+      end
+    end
   end
 end
