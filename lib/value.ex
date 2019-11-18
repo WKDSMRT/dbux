@@ -14,7 +14,7 @@ defmodule DBux.Value do
     if @debug, do: debug("Marshalling byte start: value = #{inspect(value)}", 0)
     if String.length(value) != 1, do: throw {:badarg, :value, :outofrange}
 
-    bitstring <> << hd(to_char_list(value)) >>
+    bitstring <> << hd(to_charlist(value)) >>
   end
 
 

@@ -30,7 +30,7 @@ defmodule DBux.MessageTemplate do
   Builds standard method call to org.freedesktop.DBus.AddMatch.
   """
   @spec add_match(DBux.Message.message_type, String.t, String.t, String.t, String.t, String.t, String.t, [] | [String.t], [] | [String.t], String.t, boolean, DBux.Serial.t) :: %DBux.Message{}
-  def add_match(type \\ nil, sender \\ nil, interface \\ nil, member \\ nil, path \\ nil, path_namespace \\ nil, destination \\ nil, string_matches \\ [], path_matches \\ [], arg0namespace \\ nil, eavesdrop \\ nil, serial \\ 0) when is_number(serial) do
+  def add_match(type \\ nil, sender \\ nil, interface \\ nil, member \\ nil, path \\ nil, path_namespace \\ nil, destination \\ nil, _string_matches \\ [], _path_matches \\ [], arg0namespace \\ nil, eavesdrop \\ nil, serial \\ 0) when is_number(serial) do
     filter = []
 
     filter = if !is_nil(type),           do: filter ++ ["type='#{type}'"],                     else: filter

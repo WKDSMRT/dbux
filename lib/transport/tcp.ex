@@ -57,7 +57,7 @@ defmodule DBux.Transport.TCP do
   @doc false
   def connect(_, %{host: host, port: port} = state) do
     if @debug, do: Logger.debug("[DBux.Transport.TCP #{inspect(self())}] Connect: Connecting to #{host}:#{port}")
-    case :gen_tcp.connect(to_char_list(host), port, [active: true, mode: :binary, packet: :line, keepalive: true, nodelay: true], @connect_timeout) do
+    case :gen_tcp.connect(to_charlist(host), port, [active: true, mode: :binary, packet: :line, keepalive: true, nodelay: true], @connect_timeout) do
       {:ok, sock} ->
         if @debug, do: Logger.debug("[DBux.Transport.TCP #{inspect(self())}] Connect: Successfully connected to #{host}:#{port}")
         {:ok, %{state | sock: sock, state: :handshake}}

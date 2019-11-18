@@ -113,7 +113,7 @@ defmodule DBux.PeerConnection do
   require Logger
   use Connection
 
-  @connect_timeout 5000
+  # @connect_timeout 5000
   @reconnect_timeout 5000
 
   @type message_queue_id :: String.t | atom | number
