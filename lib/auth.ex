@@ -10,4 +10,7 @@ defmodule DBux.Auth do
   def get_module_for_method(:anonymous) do
     {:ok, {DBux.Auth.Anonymous, []}}
   end
+  def get_module_for_method(:none) do
+    {:ok, {DBux.Auth.None, []}}
+  end
 end
