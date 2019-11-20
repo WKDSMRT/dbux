@@ -57,7 +57,7 @@ defmodule DBux.Transport.UDS do
   @doc false
   def connect(_, %{path: path} = state) do
     if @debug, do: Logger.debug("[DBux.Transport.UDS #{inspect(self())}] Connect: Connecting to #{path}")
-    case :gen_tcp.connect({:local, path}, 0, [active: false, mode: :binary, reuseaddr: true], @connect_timeout) do
+    case :gen_tcp.connect({:local, path}, 0, [active: true, mode: :binary, reuseaddr: true], @connect_timeout) do
       {:ok, sock} ->
         if @debug, do: Logger.debug("[DBux.Transport.UDS #{inspect(self())}] Connect: Successfully connected to #{path}")
         {:ok, %{state | sock: sock, state: :handshake}}
