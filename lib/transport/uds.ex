@@ -230,4 +230,10 @@ defmodule DBux.Transport.UDS do
     send(parent, {:dbux_transport_receive, data})
     {:noreply, state}
   end
+
+  @doc false
+  def handle_info(data, state) do
+    if @debug, do: Logger.debug "[DBux.Transport.UDS #{inspect(self())}] Unknown Info: #{inspect(data)}"
+    {:noreply, state}
+  end
 end
