@@ -54,7 +54,7 @@ defmodule DBux.Message do
   @doc """
   Creates DBux.Message with attributes appropriate for signal.
   """
-  @spec build_signal(String.t, String.t, String.t,  String.t, DBux.Value.list_of_values, DBux.Serial.t) :: %DBux.Message{}
+  @spec build_signal(String.t, String.t, String.t, String.t, DBux.Value.list_of_values, DBux.Serial.t) :: %DBux.Message{}
   def build_signal(path, interface, member, signature \\ "", body \\ [], serial \\ 0) when is_number(serial) and is_binary(path) and is_binary(interface) and is_list(body) and is_binary(signature) do
     %DBux.Message{signature: signature, serial: serial, message_type: :signal, path: path, interface: interface, member: member, body: body}
   end

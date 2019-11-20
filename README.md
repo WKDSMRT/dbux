@@ -101,7 +101,7 @@ defmodule MyApp.Bus do
     Logger.info("Up")
 
     {:send, [
-      DBux.Message.build_signal("/", "org.example.dbux.MyApp", "Connected", []),
+      DBux.Message.build_signal("/", "org.example.dbux.MyApp", "Connected", "s", []),
       {@add_match_message_id,    DBux.MessageTemplate.add_match(:signal, nil, "org.example.dbux.OtherIface")},
       {@request_name_message_id, DBux.MessageTemplate.request_name("org.example.dbux.MyApp", 0x4)}
     ], state}
@@ -116,7 +116,7 @@ defmodule MyApp.Bus do
     Logger.debug("Got Introspect call")
 
     {:send, [
-      DBux.Message.build_method_return(serial, sender, [%DBux.Value{type: :string, value: @introspection}])
+      DBux.Message.build_method_return(serial, sender, "s", [%DBux.Value{type: :string, value: @introspection}])
     ], state}
   end
 
