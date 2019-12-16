@@ -857,7 +857,7 @@ defmodule DBux.ValueSpec do
 
 
     xcontext "if passed 'dict' value" do
-      let :type, do: :dict
+      let :type, do: :dict_entry
 
     end
 

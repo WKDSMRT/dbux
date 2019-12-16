@@ -316,10 +316,6 @@ defmodule DBux.Value do
   def unmarshall(bitstring, endianness, {:dict_entry, subtype}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
     unmarshall(bitstring, endianness, {:struct, subtype}, unwrap_values, depth)
   end
-  def unmarshall(bitstring, endianness, {:dict, subtype}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
-    unmarshall(bitstring, endianness, {:struct, subtype}, unwrap_values, depth)
-  end
-
 
   def unmarshall(bitstring, endianness, {:struct, subtypes}, unwrap_values, depth) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling struct: bitstring = #{inspect(bitstring)}", depth)

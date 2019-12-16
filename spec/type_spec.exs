@@ -203,7 +203,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "a{bu}"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:boolean, :uint32]}]}]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:boolean, :uint32]}]}]}
             end
           end
 
@@ -211,7 +211,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "ia{bu}"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [:int32, {:array, [{:dict, [:boolean, :uint32]}]}]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [:int32, {:array, [{:dict_entry, [:boolean, :uint32]}]}]}
             end
           end
 
@@ -219,7 +219,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "a{bu}i"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:boolean, :uint32]}]}, :int32]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:boolean, :uint32]}]}, :int32]}
             end
           end
 
@@ -227,7 +227,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "ha{bu}i"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [:unix_fd, {:array, [{:dict, [:boolean, :uint32]}]}, :int32]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [:unix_fd, {:array, [{:dict_entry, [:boolean, :uint32]}]}, :int32]}
             end
           end
 
@@ -235,7 +235,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "a{is}a{bu}"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:int32, :string]}]}, {:array, [{:dict, [:boolean, :uint32]}]}]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:int32, :string]}]}, {:array, [{:dict_entry, [:boolean, :uint32]}]}]}
             end
           end
 
@@ -243,7 +243,7 @@ defmodule DBux.TypeSpec do
             let :signature, do: "a{bu}a{is}"
 
             it "returns a list of atoms and tuples of appropriate types" do
-              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:boolean, :uint32]}]}, {:array, [{:dict, [:int32, :string]}]}]}
+              expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:boolean, :uint32]}]}, {:array, [{:dict_entry, [:int32, :string]}]}]}
             end
           end
 
@@ -258,7 +258,7 @@ defmodule DBux.TypeSpec do
                   :boolean,
                   :uint32,
                   {:array, [
-                    {:dict, [:double, :string]},
+                    {:dict_entry, [:double, :string]},
                   ]},
                   :int32
                 ]},
@@ -339,7 +339,7 @@ defmodule DBux.TypeSpec do
           let :signature, do: "a{ss}"
 
           it "returns a list of atoms and tuples of appropriate types" do
-            expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:string, :string]}]}]}
+            expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:string, :string]}]}]}
           end
         end
 
@@ -347,7 +347,7 @@ defmodule DBux.TypeSpec do
           let :signature, do: "da{ss}d"
 
           it "returns a list of atoms and tuples of appropriate types" do
-            expect(described_module.type_from_signature(signature)).to eq {:ok, [:double, {:array, [{:dict, [:string, :string]}]}, :double]}
+            expect(described_module.type_from_signature(signature)).to eq {:ok, [:double, {:array, [{:dict_entry, [:string, :string]}]}, :double]}
           end
         end
       end
@@ -357,7 +357,7 @@ defmodule DBux.TypeSpec do
           let :signature, do: "a{s(is)}"
 
           it "returns a list of atoms and tuples of appropriate types" do
-            expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict, [:string, {:struct, [:int32, :string]}]}]}]}
+            expect(described_module.type_from_signature(signature)).to eq {:ok, [{:array, [{:dict_entry, [:string, {:struct, [:int32, :string]}]}]}]}
           end
         end
 
@@ -365,7 +365,7 @@ defmodule DBux.TypeSpec do
           let :signature, do: "da{s(is)}d"
 
           it "returns a list of atoms and tuples of appropriate types" do
-            expect(described_module.type_from_signature(signature)).to eq {:ok, [:double, {:array, [{:dict, [:string, {:struct, [:int32, :string]}]}]}, :double]}
+            expect(described_module.type_from_signature(signature)).to eq {:ok, [:double, {:array, [{:dict_entry, [:string, {:struct, [:int32, :string]}]}]}, :double]}
           end
         end
       end
