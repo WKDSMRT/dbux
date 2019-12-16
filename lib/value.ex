@@ -312,7 +312,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, {:dict_entry, subtype}, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, {:dict_entry, subtype}, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     unmarshall(bitstring, endianness, {:struct, subtype}, unwrap_values, depth, true)
   end
 
@@ -402,7 +402,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :byte, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :byte, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling byte: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:byte) do
       {:error, :bitstring_too_short}
@@ -421,7 +421,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :uint16, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :uint16, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling uint16: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:uint16) do
       {:error, :bitstring_too_short}
@@ -448,7 +448,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :int16, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :int16, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling int16: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:int16) do
       {:error, :bitstring_too_short}
@@ -475,7 +475,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :uint32, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :uint32, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling uint32: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:uint32) do
       {:error, :bitstring_too_short}
@@ -531,7 +531,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :int32, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :int32, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling int32: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:int32) do
       {:error, :bitstring_too_short}
@@ -558,7 +558,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :uint64, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :uint64, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling uint64: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:uint64) do
       {:error, :bitstring_too_short}
@@ -585,7 +585,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :int64, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :int64, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling int64: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:int64) do
       {:error, :bitstring_too_short}
@@ -612,7 +612,7 @@ defmodule DBux.Value do
   end
 
 
-  def unmarshall(bitstring, endianness, :double, unwrap_values, depth, in_dict) when is_binary(bitstring) and is_atom(endianness) do
+  def unmarshall(bitstring, endianness, :double, unwrap_values, depth, _in_dict) when is_binary(bitstring) and is_atom(endianness) do
     if @debug, do: debug("Unmarshalling double: bitstring = #{inspect(bitstring)}", depth)
     if byte_size(bitstring) < DBux.Type.align_size(:double) do
       {:error, :bitstring_too_short}
